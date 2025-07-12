@@ -1,0 +1,57 @@
+name: Fix Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version '
+        required: true
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.version }}
+      FIX_VERSION: fix${{ github.run_number }}
+      REGISTRY: cr.yandex/${{ secrets.YCR_REGISTRY_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type check and tests
+        run: |
+          tsc --noEmit
+          npm test
+
+      - name: Docker login
+        run: docker login --username oauth --password ${{ secrets.YC_OAUTH_TOKEN }} cr.yandex
+
+      - name: Build Docker image
+        run: |
+          docker build -t $REGISTRY/app:${VERSION}_${FIX_VERSION} .
+          docker tag $REGISTRY/app:${VERSION}_${FIX_VERSION} $REGISTRY/app:${VERSION}_latest
+
+      - name: Push Docker image
+        run: |
+          docker push $REGISTRY/app:${VERSION}_${FIX_VERSION}
+          docker push $REGISTRY/app:${VERSION}_latest
+
+      - name: Create Git tag
+        run: |
+          git tag v${VERSION}_${FIX_VERSION}
+          git push origin v${VERSION}_${FIX_VERSION}
+
+      - name: Add comment to GitHub Issue
+        run: |
+          echo "Fix released for v${VERSION}" >> fix-comment.txt
+          echo "Date: $(date)" >> fix-comment.txt
+          echo "By: $GITHUB_ACTOR" >> fix-comment.txt
+          echo "Image: $REGISTRY/app:${VERSION}_${FIX_VERSION}" >> fix-comment.txt
+
