@@ -27,7 +27,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker login -u iam -p ${{ secrets.YA_OAUTH_TOKEN }} cr.yandex
+            docker login -u iam -p ${{ secrets.YC_OAUTH_TOKEN }} cr.yandex
             IMAGE=cr.yandex/${{ secrets.YCR_REGISTRY_ID }}/app:${{ github.event.inputs.version }}_latest
             docker pull $IMAGE
             docker stop app || true
