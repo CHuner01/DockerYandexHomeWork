@@ -70,10 +70,24 @@ jobs:
           echo "$COMMITS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Generate Issue content
+        run: |
+          echo "##Release $VERSION" > ISSUE_TEMPLATE.md
+          echo "" >> ISSUE_TEMPLATE.md
+          echo "**Date:** $(date -u)" >> ISSUE_TEMPLATE.md
+          echo "**Author:** ${{ github.actor }}" >> ISSUE_TEMPLATE.md
+          echo "**🏷Version:** $VERSION" >> ISSUE_TEMPLATE.md
+          echo "" >> ISSUE_TEMPLATE.md
+          echo "**Docker Image:** $REGISTRY/app:${VERSION}" >> ISSUE_TEMPLATE.md
+          echo "" >> ISSUE_TEMPLATE.md
+          echo "**Commits:**" >> ISSUE_TEMPLATE.md
+          echo "${{ steps.changelog.outputs.commits }}" >> ISSUE_TEMPLATE.md
+          
+
       - name: Create GitHub Issue
         uses: peter-evans/create-issue-from-file@v5
         with:
-          content-filepath: 'CHANGELOG.md'
+          content-filepath: 'ISSUE_TEMPLATE.md'
           title: Release ${{ env.VERSION }}
           labels: release
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
