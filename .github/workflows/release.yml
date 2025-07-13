@@ -76,6 +76,7 @@ jobs:
           content-filepath: 'CHANGELOG.md'
           title: Release ${{ env.VERSION }}
           labels: release
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         env:
           COMMITS: ${{ steps.changelog.outputs.commits }}
 
