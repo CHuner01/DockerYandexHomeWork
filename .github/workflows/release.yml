@@ -25,6 +25,8 @@ jobs:
       REGISTRY: cr.yandex/${{ secrets.YCR_REGISTRY_ID }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Create release branch
         run: |
