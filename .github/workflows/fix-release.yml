@@ -51,44 +51,10 @@ jobs:
           git remote set-url origin https://${PERSONAL_ACCESS_TOKEN}@github.com/CHuner01/DockerYandexHomeWork.git
           git push origin v${VERSION}_${FIX_VERSION}
 
-      - name: Get commit list since last tag
-        id: changelog
+      - name: Add comment to GitHub Issue
         run: |
-          git fetch --tags
-          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            COMMITS=$(git log --oneline)
-          else
-            COMMITS=$(git log --oneline ${LAST_TAG}..HEAD)
-          fi
-          echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMITS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Generate fix comment
-        env:
-          COMMITS: ${{ steps.changelog.outputs.commits }}
-        run: |
-          echo "###Fix released for v${VERSION}" > fix-comment.md
-          echo "**Date:** $(date -u)" >> fix-comment.md
-          echo "**By:** $GITHUB_ACTOR" >> fix-comment.md
-          echo "**Image:** $REGISTRY/app:${VERSION}_${FIX_VERSION}" >> fix-comment.md
-          echo "" >> fix-comment.md
-          echo "**Commits since last tag:**" >> fix-comment.md
-          echo "${COMMITS}" >> fix-comment.md
-
-      - name: Find release issue by title
-        id: find-issue
-        uses: peter-evans/find-issue@v2
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          title: Release ${{ env.VERSION }}
-
-      - name: Comment on existing issue
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          issue-number: ${{ steps.find-issue.outputs.issue-number }}
-          body-file: fix-comment.md
-
+          echo "Fix released for v${VERSION}" >> fix-comment.txt
+          echo "Date: $(date)" >> fix-comment.txt
+          echo "By: $GITHUB_ACTOR" >> fix-comment.txt
+          echo "Image: $REGISTRY/app:${VERSION}_${FIX_VERSION}" >> fix-comment.txt
 
