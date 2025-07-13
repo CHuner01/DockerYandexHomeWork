@@ -14,8 +14,11 @@ jobs:
       VERSION: ${{ github.event.inputs.version }}
       FIX_VERSION: fix${{ github.run_number }}
       REGISTRY: cr.yandex/${{ secrets.YCR_REGISTRY_ID }}
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,6 +49,7 @@ jobs:
       - name: Create Git tag
         run: |
           git tag v${VERSION}_${FIX_VERSION}
+          git remote set-url origin https://${PERSONAL_ACCESS_TOKEN}@github.com/CHuner01/DockerYandexHomeWork.git
           git push origin v${VERSION}_${FIX_VERSION}
 
       - name: Add comment to GitHub Issue
