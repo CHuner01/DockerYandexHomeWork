@@ -14,9 +14,11 @@ jobs:
       VERSION: ${{ github.event.inputs.version }}
       REGISTRY: cr.yandex/${{ secrets.YCR_REGISTRY_ID }}
     steps:
+      - name: Docker login
+        run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username iam --password-stdin cr.yandex
+
       - name: Check Docker image exists
-        run: |
-          docker pull $REGISTRY/app:${VERSION}_latest
+        run: docker pull $REGISTRY/app:${VERSION}_latest
 
       - name: SSH into VM and run Docker
         uses: appleboy/ssh-action@v1.0.0
