@@ -34,7 +34,7 @@ jobs:
           npm test
 
       - name: Docker login
-        run: docker login --username oauth --password ${{ secrets.YC_OAUTH_TOKEN }} cr.yandex
+        run: docker login --username iam --password ${{ secrets.YC_OAUTH_TOKEN }} cr.yandex
 
       - name: Build Docker image
         run: |

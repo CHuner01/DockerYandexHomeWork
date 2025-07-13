@@ -37,7 +37,8 @@ jobs:
           git push origin releases/${{ env.VERSION }}
 
       - name: Docker login
-        run: docker login --username oauth --password ${{ secrets.YC_OAUTH_TOKEN }} cr.yandex
+        run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username iam --password-stdin cr.yandex
+
 
       - name: Build Docker image
         run: |
