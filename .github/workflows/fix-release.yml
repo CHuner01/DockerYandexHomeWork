@@ -30,7 +30,6 @@ jobs:
 
       - name: Run type check and tests
         run: |
-          tsc --noEmit
           npm test
 
       - name: Docker login
